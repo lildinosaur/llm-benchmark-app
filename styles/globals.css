@@ -1,0 +1,547 @@
+/* ==========================================================================
+   Benchmark LLM — « l'instrument de mesure »
+   Palette : atelier clair, panneaux graphite, jaune mesure, écran LCD
+   ========================================================================== */
+
+:root {
+  --bg: #edeef0;
+  --panel: #ffffff;
+  --graphite: #24272c;
+  --graphite-2: #2e323a;
+  --ink: #1e2126;
+  --muted: #6a7078;
+  --line: #d8dade;
+  --yellow: #f6b51e;
+  --yellow-press: #e0a312;
+  --lcd: #d6e3ce;
+  --lcd-dim: #c3d2ba;
+  --lcd-ink: #23301f;
+  --danger: #c43e2f;
+  --danger-bg: #faece9;
+
+  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-body: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius: 6px;
+  --shadow: 0 1px 2px rgba(30, 33, 38, 0.06), 0 4px 14px rgba(30, 33, 38, 0.05);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.app-root {
+  font-family: var(--font-body);
+}
+
+:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Façade d'instrument (en-tête)
+   -------------------------------------------------------------------------- */
+
+.faceplate {
+  background: linear-gradient(180deg, var(--graphite-2), var(--graphite));
+  border-bottom: 3px solid var(--yellow);
+  color: #f2f3f4;
+}
+
+.faceplate-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 26px 24px 22px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.45rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand .power-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(246, 181, 30, 0.25);
+  flex: none;
+}
+
+.tagline {
+  color: #a9adb4;
+  font-size: 0.92rem;
+}
+
+.faceplate .model-tag {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  color: var(--yellow);
+  word-break: break-all;
+}
+
+/* --------------------------------------------------------------------------
+   Plan de travail
+   -------------------------------------------------------------------------- */
+
+.workspace {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Console de prompt
+   -------------------------------------------------------------------------- */
+
+.prompt-console {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 20px 14px;
+  margin-bottom: 28px;
+}
+
+.console-label {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.prompt-input {
+  width: 100%;
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: #fafbfb;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+
+.prompt-input:focus {
+  outline: none;
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(246, 181, 30, 0.22);
+}
+
+.console-hint {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------------
+   Liste des modèles
+   -------------------------------------------------------------------------- */
+
+.model-list ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.model-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--graphite);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 18px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 120ms ease, transform 120ms ease;
+}
+
+.model-link:hover {
+  border-left-color: var(--yellow);
+  transform: translateX(2px);
+}
+
+.model-name {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.98rem;
+  word-break: break-all;
+}
+
+.model-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex: none;
+}
+
+.meta-chip {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+.meta-size {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--muted);
+  min-width: 64px;
+  text-align: right;
+}
+
+.model-go {
+  flex: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  background: var(--yellow);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   États : chargement, erreur, vide
+   -------------------------------------------------------------------------- */
+
+.state-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 24px;
+}
+
+.state-panel h2 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+
+.state-panel p {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.scan-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.scan-bar {
+  height: 100%;
+  width: 30%;
+  border-radius: 999px;
+  background: var(--yellow);
+  animation: scan 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes scan {
+  from { transform: translateX(-40%); }
+  to { transform: translateX(280%); }
+}
+
+.error-panel {
+  background: var(--danger-bg);
+  border: 1px solid #eccfc9;
+  border-left: 4px solid var(--danger);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+
+.error-panel h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--danger);
+  margin-bottom: 8px;
+}
+
+.error-panel p {
+  color: #7c3327;
+  font-size: 0.92rem;
+  margin-top: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Signature : panneau de lecture LCD
+   -------------------------------------------------------------------------- */
+
+.readout {
+  background: linear-gradient(180deg, var(--graphite-2), var(--graphite));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 18px 18px;
+  margin-bottom: 26px;
+}
+
+.readout-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.readout-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+
+.readout-model {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: #a9adb4;
+  word-break: break-all;
+  text-align: right;
+}
+
+.lcd {
+  background: linear-gradient(180deg, var(--lcd), var(--lcd-dim));
+  border-radius: 4px;
+  box-shadow: inset 0 2px 6px rgba(35, 48, 31, 0.25);
+  color: var(--lcd-ink);
+  padding: 16px 18px 14px;
+}
+
+.lcd-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.lcd-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.lcd-unit {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.lcd-sub {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin: 4px 0 14px;
+}
+
+.lcd-bar {
+  height: 14px;
+  border-radius: 2px;
+  background: rgba(35, 48, 31, 0.12);
+  overflow: hidden;
+}
+
+.lcd-bar-fill {
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--lcd-ink) 0 6px,
+    transparent 6px 9px
+  );
+  transition: width 700ms ease-out;
+}
+
+.lcd-bar-legend {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  margin-top: 6px;
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+   Grilles d'informations et de métriques
+   -------------------------------------------------------------------------- */
+
+.panel-section {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 22px;
+  margin-bottom: 22px;
+}
+
+.info-grid,
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.info-item,
+.metric-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: #fafbfb;
+}
+
+.info-label,
+.metric-label {
+  font-size: 0.74rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.info-value,
+.metric-value {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+
+.info-item--wide {
+  grid-column: 1 / -1;
+}
+
+/* --------------------------------------------------------------------------
+   Sortie du modèle
+   -------------------------------------------------------------------------- */
+
+.output-console {
+  background: var(--graphite);
+  color: #d8dbdf;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  overflow-x: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Boutons
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  background: var(--yellow);
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 18px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.btn:hover {
+  background: var(--yellow-press);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive et accessibilité
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .model-link {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .model-meta {
+    margin-left: 0;
+    order: 3;
+  }
+
+  .model-go {
+    margin-left: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-bar {
+    animation: none;
+  }
+
+  .lcd-bar-fill,
+  .model-link {
+    transition: none;
+  }
+}
