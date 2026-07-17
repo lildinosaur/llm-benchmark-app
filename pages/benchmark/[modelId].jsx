@@ -1,77 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import BenchmarkResult from '../../app/components/BenchmarkResult';
-import { ollamaClient } from '../../app/lib/ollamaClient';
+import { runFullBenchmark } from '../../app/lib/runBenchmark';
 
 export default function BenchmarkPage({ modelId, prompt }) {
   const [benchmarkData, setBenchmarkData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [savedId, setSavedId] = useState(null);
+  const [unloaded, setUnloaded] = useState(false);
 
   useEffect(() => {
     const runBenchmark = async () => {
       try {
         setLoading(true);
 
-        // Fetch model information first to get disk size
-        const models = await ollamaClient.fetchModels();
-        const modelInfo = models.find(model => model.name === modelId) || {};
-
-        // Run the actual benchmark with the user-provided prompt
-        const benchmarkResult = await ollamaClient.runBenchmark(modelId, prompt);
-
-        // The model is now loaded: query /api/ps for VRAM usage and context length
-        const runningModels = await ollamaClient.fetchRunningModels();
-        const runningInfo = runningModels.find(model => model.name === modelId) || {};
-
-        // Convert Ollama metrics (nanoseconds) into display values
-        const responseTime = benchmarkResult.totalDuration
-          ? Math.round(benchmarkResult.totalDuration / 1e6)
-          : benchmarkResult.duration;
-        const loadTime = benchmarkResult.loadDuration
-          ? (benchmarkResult.loadDuration / 1e9).toFixed(2)
-          : null;
-        const generationSpeed = benchmarkResult.evalCount && benchmarkResult.evalDuration
-          ? (benchmarkResult.evalCount / (benchmarkResult.evalDuration / 1e9)).toFixed(1)
-          : null;
-        const overallScore = benchmarkResult.evalCount && benchmarkResult.totalDuration
-          ? (benchmarkResult.evalCount / (benchmarkResult.totalDuration / 1e9)).toFixed(1)
-          : null;
-        const promptTokens = benchmarkResult.promptEvalCount || null;
-        const promptEvalTime = benchmarkResult.promptEvalDuration
-          ? (benchmarkResult.promptEvalDuration / 1e9).toFixed(2)
-          : null;
-        const promptEvalSpeed = benchmarkResult.promptEvalCount && benchmarkResult.promptEvalDuration
-          ? (benchmarkResult.promptEvalCount / (benchmarkResult.promptEvalDuration / 1e9)).toFixed(1)
-          : null;
-        const generatedTokens = benchmarkResult.evalCount || null;
-        const generationTime = benchmarkResult.evalDuration
-          ? (benchmarkResult.evalDuration / 1e9).toFixed(2)
-          : null;
-
-        // Combine model info with benchmark results
-        const completeData = {
-          ...benchmarkResult,
-          modelInfo: {
-            modelName: modelId,
-            diskSize: modelInfo.size,
-            vramUsage: runningInfo.size_vram || 0
-          },
-          responseTime,
-          loadTime,
-          generationSpeed,
-          overallScore,
-          promptTokens,
-          promptEvalTime,
-          promptEvalSpeed,
-          generatedTokens,
-          generationTime,
-          prompt: prompt,
-          date: new Date().toLocaleDateString('fr-FR'),
-          contextLength: runningInfo.context_length || 'N/A'
-        };
+        const { completeData, id, unloaded } = await runFullBenchmark(modelId, prompt);
 
         setBenchmarkData(completeData);
+        if (id !== null) setSavedId(id);
+        setUnloaded(unloaded);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -122,6 +70,14 @@ export default function BenchmarkPage({ modelId, prompt }) {
 
         {!loading && !error && (
           <>
+            <div className="saved-banner">
+              {savedId
+                ? 'Résultat enregistré · '
+                : 'Enregistrement du résultat… · '}
+              {unloaded
+                ? 'modèle déchargé de la VRAM.'
+                : 'déchargement de la VRAM non confirmé.'}
+            </div>
             <BenchmarkResult data={benchmarkData} />
             <div style={{ marginTop: '24px' }}>
               <a href="/" className="btn">← Retour à la liste des modèles</a>

@@ -20,6 +20,9 @@ export default function Home() {
       </header>
 
       <main className="workspace">
+        <div style={{ marginBottom: '20px' }}>
+          <a href="/dashboard" className="btn">Tableau comparatif →</a>
+        </div>
         <ModelList />
       </main>
     </div>

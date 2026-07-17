@@ -180,6 +180,25 @@ body {
   color: var(--muted);
 }
 
+.run-all-btn {
+  margin-top: 14px;
+}
+
+.run-all-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.run-all-progress {
+  margin-top: 14px;
+}
+
+.run-all-progress p {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 /* --------------------------------------------------------------------------
    Liste des modèles
    -------------------------------------------------------------------------- */
@@ -511,7 +530,7 @@ body {
   transition: background 120ms ease;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   background: var(--yellow-press);
 }
 
@@ -544,4 +563,128 @@ body {
   .model-link {
     transition: none;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Résultats enregistrés (persistance SQLite)
+   -------------------------------------------------------------------------- */
+
+.saved-banner {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--lcd-ink);
+  background: var(--lcd);
+  border: 1px solid var(--lcd-dim);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+}
+
+.saved-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 18px 2px;
+  flex-wrap: wrap;
+}
+
+.saved-metric {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.saved-link {
+  margin-left: auto;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--graphite);
+  text-decoration: none;
+}
+
+.saved-link:hover {
+  color: var(--yellow-press);
+}
+
+/* --------------------------------------------------------------------------
+   Tableau comparatif (dashboard)
+   -------------------------------------------------------------------------- */
+.dash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dash-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.dash-scroll {
+  overflow-x: auto;
+  margin-top: 14px;
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.dash-table th,
+.dash-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.dash-table thead th {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 2px solid var(--graphite);
+}
+
+.dash-table tbody tr:hover {
+  background: var(--bg);
+}
+
+.dash-table .num {
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+.dash-table .strong {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.dash-table .col-rank {
+  width: 2.5rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.dash-table .col-model {
+  font-weight: 600;
+}
+
+.dash-table tbody tr:first-child .col-rank {
+  color: var(--yellow-press);
+  font-weight: 700;
+}
+
+.dash-table .col-date {
+  color: var(--muted);
+  font-size: 0.82rem;
 }

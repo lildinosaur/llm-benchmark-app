@@ -68,6 +68,38 @@ export const ollamaClient = {
   },
 
   // Exécuter un benchmark sur un modèle
+  // Précharger le modèle en VRAM avec un prompt trivial.
+  // Les métriques sont ignorées : seul l'effet de chargement compte,
+  // pour que le vrai benchmark mesure l'inférence sans le chargement à froid.
+  async warmup(modelId) {
+    try {
+      if (typeof window !== 'undefined' && window.__TEST_MODE__) {
+        return true;
+      }
+
+      const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: modelId,
+          prompt: 'Hi !',
+          stream: false
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return true;
+    } catch (error) {
+      // Un warmup raté ne doit pas casser le flux de benchmark.
+      console.error('Erreur lors du préchauffage du modèle:', error);
+      return false;
+    }
+  },
+
   async runBenchmark(modelId, prompt = 'Réponds par un mot unique : test') {
     try {
       const startTime = Date.now();
@@ -108,6 +140,36 @@ export const ollamaClient = {
     } catch (error) {
       console.error('Erreur lors du benchmark:', error);
       throw error;
+    }
+  },
+
+  // Décharger un modèle de la VRAM.
+  // Ollama libère la mémoire quand keep_alive vaut 0 sur /api/generate.
+  async unloadModel(modelId) {
+    try {
+      if (typeof window !== 'undefined' && window.__TEST_MODE__) {
+        return true;
+      }
+
+      const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: modelId,
+          keep_alive: 0
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return true;
+    } catch (error) {
+      // Le déchargement ne doit pas faire échouer le flux de benchmark.
+      console.error('Erreur lors du déchargement du modèle:', error);
+      return false;
     }
   }
 };
