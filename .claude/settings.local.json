@@ -13,7 +13,10 @@
       "Bash(ps -o pid,ppid,lstart,cmd -p 4192439)",
       "Bash(timeout 180 google-chrome --headless=new --disable-gpu --no-sandbox --force-prefers-reduced-motion --user-data-dir=/tmp/claude-1000/-home-stephen-projects-LLM_Test2/f2d4c1c3-3523-405c-a9ba-0ca40355b5f6/scratchpad/chrome-profile --screenshot=/tmp/claude-1000/-home-stephen-projects-LLM_Test2/f2d4c1c3-3523-405c-a9ba-0ca40355b5f6/scratchpad/bench4.png --window-size=1280,1500 --virtual-time-budget=600000 http://localhost:3000/benchmark/phi4-mini%3Alatest?prompt=Liste%20trois%20couleurs%2C%20une%20par%20ligne)",
       "Bash(timeout 60 google-chrome --headless=new --disable-gpu --no-sandbox --force-prefers-reduced-motion --user-data-dir=/tmp/claude-1000/-home-stephen-projects-LLM_Test2/f2d4c1c3-3523-405c-a9ba-0ca40355b5f6/scratchpad/chrome-profile --screenshot=/tmp/claude-1000/-home-stephen-projects-LLM_Test2/f2d4c1c3-3523-405c-a9ba-0ca40355b5f6/scratchpad/mobile.png --window-size=375,800 --virtual-time-budget=60000 http://localhost:3000/)",
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"require.resolve\\('undici'\\); console.log\\('undici OK'\\)\")",
+      "Bash(node -e \"console.log\\('node', process.version\\)\")"
     ]
   }
 }

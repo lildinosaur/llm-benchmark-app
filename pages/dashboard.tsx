@@ -1,18 +1,39 @@
 import React from 'react';
 import Head from 'next/head';
+import type { GetServerSideProps } from 'next';
 import { getLatestPerModel } from '../app/lib/db';
+import ThemeToggle from '../app/components/ThemeToggle';
+
+// Ligne du tableau comparatif (données aplaties pour l'affichage/export).
+interface Row {
+  id: number;
+  modelId: string;
+  modelName: string;
+  overallScore: number | null;
+  generationSpeed: number | null;
+  responseTime: number | null;
+  generatedTokens: number | null;
+  loadTime: number | null;
+  diskSize: string | null;
+  date: string;
+}
+
+interface DashboardProps {
+  rows: Row[];
+}
 
 // Formate des octets en Go lisibles.
-const formatToGB = (bytes) => {
+const formatToGB = (bytes: number | undefined): string | null => {
   if (!bytes) return '—';
   return (bytes / (1024 ** 3)).toFixed(1) + ' Go';
 };
 
 // Valeur numérique sûre (pour tri et affichage).
-const num = (v) => (v != null && Number.isFinite(parseFloat(v)) ? parseFloat(v) : null);
+const num = (v: unknown): number | null =>
+  v != null && Number.isFinite(parseFloat(String(v))) ? parseFloat(String(v)) : null;
 
 // Colonnes du tableau (en-tête + extracteur), partagées écran / export.
-const COLUMNS = [
+const COLUMNS: { label: string; get: (r: Row, i: number) => string | number | null }[] = [
   { label: 'Rang', get: (r, i) => i + 1 },
   { label: 'Modèle', get: (r) => r.modelName },
   { label: 'Score global', get: (r) => r.overallScore ?? '' },
@@ -25,13 +46,13 @@ const COLUMNS = [
 ];
 
 // Échappe une valeur pour CSV (séparateur point-virgule, style Excel FR).
-const csvCell = (v) => {
+const csvCell = (v: unknown): string => {
   const s = String(v ?? '');
   return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 };
 
 // Génère un CSV (ouvrable dans Excel) et déclenche le téléchargement.
-const exportCsv = (rows) => {
+const exportCsv = (rows: Row[]): void => {
   const lines = [
     COLUMNS.map((c) => csvCell(c.label)).join(';'),
     ...rows.map((r, i) => COLUMNS.map((c) => csvCell(c.get(r, i))).join(';'))
@@ -49,7 +70,7 @@ const exportCsv = (rows) => {
 };
 
 // Tableau comparatif de tous les modèles benchmarkés.
-export default function Dashboard({ rows }) {
+export default function Dashboard({ rows }: DashboardProps) {
   return (
     <div className="app-shell">
       <Head>
@@ -63,6 +84,7 @@ export default function Dashboard({ rows }) {
             Tableau comparatif
           </h1>
           <p className="tagline">Tous les modèles côte à côte</p>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -116,6 +138,8 @@ export default function Dashboard({ rows }) {
                       <td className="col-date">{r.date}</td>
                       <td>
                         <a className="saved-link" href={`/results/${r.id}`}>Détail →</a>
+                        {' '}
+                        <a className="saved-link" href={`/history/${encodeURIComponent(r.modelId)}`}>Historique →</a>
                       </td>
                     </tr>
                   ))}
@@ -129,12 +153,13 @@ export default function Dashboard({ rows }) {
   );
 }
 
-export async function getServerSideProps() {
+export const getServerSideProps: GetServerSideProps<DashboardProps> = async () => {
   const results = getLatestPerModel();
 
-  const rows = results
+  const rows: Row[] = results
     .map((r) => ({
       id: r.id,
+      modelId: r.modelId || r.modelInfo?.modelName || 'inconnu',
       modelName: r.modelInfo?.modelName || r.modelId || 'inconnu',
       overallScore: num(r.overallScore),
       generationSpeed: num(r.generationSpeed),
@@ -148,4 +173,4 @@ export async function getServerSideProps() {
     .sort((a, b) => (b.overallScore ?? -Infinity) - (a.overallScore ?? -Infinity));
 
   return { props: { rows } };
-}
+};

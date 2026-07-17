@@ -1,15 +1,20 @@
 import React from 'react';
+import type { CompleteData, StoredResult } from '../lib/types';
 
-const BenchmarkResult = ({ data }) => {
+interface BenchmarkResultProps {
+  data?: Partial<CompleteData> | StoredResult | null;
+}
+
+const BenchmarkResult = ({ data }: BenchmarkResultProps) => {
   // Fonction pour convertir les octets en Goctets avec 2 décimales
-  const formatToGB = (bytes) => {
+  const formatToGB = (bytes: number | null | undefined): string => {
     if (bytes === null || bytes === undefined || bytes === 0) return 'N/A';
     const gb = bytes / (1024 ** 3);
     return gb.toFixed(2) + ' Go';
   };
 
   // Vérification sécurisée des données
-  const modelInfo = data && data.modelInfo ? data.modelInfo : {};
+  const modelInfo = data && data.modelInfo ? data.modelInfo : ({} as Partial<CompleteData['modelInfo']>);
   const responseTime = data && data.responseTime ? data.responseTime : 'N/A';
   const prompt = data && data.prompt ? data.prompt : 'N/A';
   const date = data && data.date ? data.date : 'N/A';
@@ -25,7 +30,7 @@ const BenchmarkResult = ({ data }) => {
   const modelResponse = data && data.response ? data.response : null;
 
   // Bargraphe du panneau LCD : gamme auto (multiple de 60 au-dessus de la vitesse)
-  const speedValue = parseFloat(generationSpeed);
+  const speedValue = parseFloat(String(generationSpeed));
   const barRange = Number.isFinite(speedValue)
     ? Math.max(120, Math.ceil(speedValue / 60) * 60)
     : 120;

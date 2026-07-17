@@ -3,11 +3,23 @@
 import path from 'path';
 import fs from 'fs';
 import Database from 'better-sqlite3';
+import type { CompleteData, StoredResult } from './types';
 
-let db;
+let db: Database.Database | undefined;
+
+interface ResultRow {
+  id: number;
+  model_id: string;
+  prompt: string | null;
+  response_time: number | null;
+  generation_speed: number | null;
+  overall_score: number | null;
+  created_at: string;
+  data: string;
+}
 
 // Initialise (une seule fois) la connexion et le schéma.
-function getDb() {
+function getDb(): Database.Database {
   if (db) return db;
 
   const dataDir = path.join(process.cwd(), 'data');
@@ -36,7 +48,7 @@ function getDb() {
 }
 
 // Enregistre un résultat complet de benchmark. Retourne l'id inséré.
-export function saveResult(result) {
+export function saveResult(result: CompleteData): number {
   const database = getDb();
   const stmt = database.prepare(`
     INSERT INTO results
@@ -55,40 +67,40 @@ export function saveResult(result) {
     data: JSON.stringify(result)
   });
 
-  return info.lastInsertRowid;
+  return Number(info.lastInsertRowid);
 }
 
 // Reconstruit une ligne DB en objet résultat (avec l'id et la date DB).
-function hydrate(row) {
+function hydrate(row: ResultRow | undefined): StoredResult | null {
   if (!row) return null;
-  const data = JSON.parse(row.data);
+  const data = JSON.parse(row.data) as CompleteData;
   return { ...data, id: row.id, savedAt: row.created_at };
 }
 
 // Dernier résultat enregistré pour chaque modèle (pour la page principale).
-export function getLatestPerModel() {
+export function getLatestPerModel(): StoredResult[] {
   const database = getDb();
   const rows = database.prepare(`
     SELECT r.* FROM results r
     JOIN (SELECT model_id, MAX(id) AS mid FROM results GROUP BY model_id) latest
       ON r.id = latest.mid
     ORDER BY r.created_at DESC
-  `).all();
-  return rows.map(hydrate);
+  `).all() as ResultRow[];
+  return rows.map(hydrate).filter((r): r is StoredResult => r !== null);
 }
 
 // Un résultat précis par id.
-export function getResultById(id) {
+export function getResultById(id: number): StoredResult | null {
   const database = getDb();
-  const row = database.prepare('SELECT * FROM results WHERE id = ?').get(id);
+  const row = database.prepare('SELECT * FROM results WHERE id = ?').get(id) as ResultRow | undefined;
   return hydrate(row);
 }
 
 // Historique complet d'un modèle (plus récent d'abord).
-export function getResultsByModel(modelId) {
+export function getResultsByModel(modelId: string): StoredResult[] {
   const database = getDb();
   const rows = database.prepare(
     'SELECT * FROM results WHERE model_id = ? ORDER BY id DESC'
-  ).all(modelId);
-  return rows.map(hydrate);
+  ).all(modelId) as ResultRow[];
+  return rows.map(hydrate).filter((r): r is StoredResult => r !== null);
 }

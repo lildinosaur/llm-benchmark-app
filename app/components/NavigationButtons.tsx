@@ -1,6 +1,16 @@
 import React from 'react';
 
-export default function NavigationButtons({ models, currentModelIndex, onNavigate }) {
+interface NavigationButtonsProps {
+  models: unknown[];
+  currentModelIndex: number;
+  onNavigate: (index: number) => void;
+}
+
+export default function NavigationButtons({
+  models,
+  currentModelIndex,
+  onNavigate
+}: NavigationButtonsProps) {
   const handlePrevious = () => {
     if (currentModelIndex > 0) {
       onNavigate(currentModelIndex - 1);

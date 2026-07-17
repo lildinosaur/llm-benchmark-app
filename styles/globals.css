@@ -23,8 +23,54 @@
   --font-body: ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
 
+  --panel-alt: #fafbfb;
+
   --radius: 6px;
   --shadow: 0 1px 2px rgba(30, 33, 38, 0.06), 0 4px 14px rgba(30, 33, 38, 0.05);
+}
+
+:root[data-theme='dark'] {
+  --panel-alt: #23262c;
+  --bg: #14161a;
+  --panel: #1d2025;
+  --graphite: #0e0f12;
+  --graphite-2: #1a1d22;
+  --ink: #e7e8ea;
+  --muted: #8b9099;
+  --line: #33373f;
+  --yellow: #f6b51e;
+  --yellow-press: #ffc84a;
+  --lcd: #29331f;
+  --lcd-dim: #1e2617;
+  --lcd-ink: #c9e6b8;
+  --danger: #e5695a;
+  --danger-bg: #3a201d;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='dark']) {
+    --panel-alt: #23262c;
+    --bg: #14161a;
+    --panel: #1d2025;
+    --graphite: #0e0f12;
+    --graphite-2: #1a1d22;
+    --ink: #e7e8ea;
+    --muted: #8b9099;
+    --line: #33373f;
+    --yellow: #f6b51e;
+    --yellow-press: #ffc84a;
+    --lcd: #29331f;
+    --lcd-dim: #1e2617;
+    --lcd-ink: #c9e6b8;
+    --danger: #e5695a;
+    --danger-bg: #3a201d;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.25);
+  }
+}
+
+body {
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 * {
@@ -77,6 +123,29 @@ body {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 6px 16px;
+}
+
+.theme-toggle {
+  margin-left: auto;
+  align-self: center;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: #f2f3f4;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--yellow);
 }
 
 .brand {
@@ -162,7 +231,7 @@ body {
   font-size: 0.92rem;
   line-height: 1.5;
   color: var(--ink);
-  background: #fafbfb;
+  background: var(--panel-alt);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 10px 12px;
@@ -187,6 +256,28 @@ body {
 .run-all-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.run-all-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.run-all-actions .run-all-btn {
+  margin-top: 0;
+}
+
+/* Bouton d'annulation : rouge, distinct du bouton jaune principal */
+.cancel-btn {
+  color: #fff;
+  background: var(--danger);
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background: #a8352a;
 }
 
 .run-all-progress {
@@ -470,7 +561,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  background: #fafbfb;
+  background: var(--panel-alt);
 }
 
 .info-label,
@@ -687,4 +778,81 @@ body {
 .dash-table .col-date {
   color: var(--muted);
   font-size: 0.82rem;
+}
+
+/* --------------------------------------------------------------------------
+   Logs en direct — console repliable pendant la mesure
+   -------------------------------------------------------------------------- */
+.live-logs {
+  margin-top: 24px;
+  text-align: left;
+  background: var(--graphite);
+  border: 1px solid var(--graphite-2);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.live-logs > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 14px;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  background: var(--graphite-2);
+  user-select: none;
+}
+
+.live-logs > summary::-webkit-details-marker {
+  display: none;
+}
+
+.live-logs > summary::before {
+  content: '▸ ';
+  color: var(--yellow);
+}
+
+.live-logs[open] > summary::before {
+  content: '▾ ';
+}
+
+.live-logs pre {
+  margin: 0;
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-y: auto;
+}
+
+.live-logs-events {
+  color: var(--muted);
+  border-bottom: 1px solid var(--graphite-2);
+  max-height: 8rem;
+}
+
+.live-logs-output {
+  color: var(--lcd);
+  max-height: 18rem;
+}
+
+.live-logs-label {
+  margin: 0;
+  padding: 8px 14px 2px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.live-logs-thinking {
+  color: var(--muted);
+  font-style: italic;
+  max-height: 14rem;
+  border-bottom: 1px solid var(--graphite-2);
 }
