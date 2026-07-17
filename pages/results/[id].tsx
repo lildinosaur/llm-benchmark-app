@@ -35,7 +35,8 @@ export default function SavedResultPage({ data, modelId }: SavedResultPageProps)
           Résultat archivé — aucun modèle chargé en mémoire.
         </div>
         <BenchmarkResult data={data} />
-        <div style={{ marginTop: '24px' }}>
+        <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+          <a href={`/history/${encodeURIComponent(modelId)}`} className="btn">← Retour à l'historique</a>
           <a href="/" className="btn">← Retour à la liste des modèles</a>
         </div>
       </main>

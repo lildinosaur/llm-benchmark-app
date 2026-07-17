@@ -750,6 +750,10 @@ body {
   background: var(--bg);
 }
 
+.dash-table tbody tr.row-clickable {
+  cursor: pointer;
+}
+
 .dash-table .num {
   text-align: right;
   font-family: var(--font-mono);
