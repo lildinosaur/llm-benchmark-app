@@ -41,7 +41,7 @@ export default function HistoryPage({ modelId, rows }: HistoryPageProps) {
 
       <main className="workspace">
         <div className="dash-actions">
-          <a href={`/benchmark/${encodeURIComponent(modelId)}`} className="btn">← Retour au modèle</a>
+          <a href="/" className="btn">← Retour à la liste des modèles</a>
         </div>
 
         {rows.length === 0 ? (
@@ -67,7 +67,11 @@ export default function HistoryPage({ modelId, rows }: HistoryPageProps) {
                 </thead>
                 <tbody>
                   {rows.map((r) => (
-                    <tr key={r.id}>
+                    <tr
+                      key={r.id}
+                      className="row-clickable"
+                      onClick={() => { window.location.href = `/results/${r.id}`; }}
+                    >
                       <td className="col-date">{r.date}</td>
                       <td className="num strong">{r.overallScore ?? '—'}</td>
                       <td className="num">{r.generationSpeed ?? '—'}</td>

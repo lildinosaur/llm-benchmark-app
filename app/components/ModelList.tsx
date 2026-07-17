@@ -292,8 +292,8 @@ export default function ModelList() {
                   <span className="saved-metric">
                     {saved.responseTime ? `${saved.responseTime} ms` : '—'}
                   </span>
-                  <a className="saved-link" href={`/results/${saved.id}`}>
-                    Voir le dernier résultat →
+                  <a className="saved-link" href={`/history/${encodeURIComponent(model.name)}`}>
+                    Voir l'historique →
                   </a>
                 </div>
               )}
